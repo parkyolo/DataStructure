@@ -1,0 +1,221 @@
+#include <iostream>
+using namespace std;
+
+
+class Node {
+private:
+	char data;
+	Node *next;
+	friend class linkedStack;
+	friend class linkedQueue;
+};
+
+class linkedStack {
+private:
+	Node *head;
+public:
+	linkedStack() { head = NULL; }
+	~linkedStack();
+	void push(char item);
+	void pop();
+	bool isEmpty();
+	void displayStack();
+	void LengthStack();
+};
+
+class linkedQueue {
+private:
+	Node *front;
+	Node *rear;
+public:
+	linkedQueue() { front = NULL; rear = NULL; }
+	~linkedQueue();
+	void enqueue(char item);
+	void dequeue();
+	bool isEmpty();
+	void displayQueue();
+	void LengthQueue();
+};
+
+linkedStack:: ~linkedStack() {
+	Node *p;
+
+	while (head != 0) {
+		p = head;
+		head = head->next;
+		delete p;
+	}
+}
+
+void linkedStack::push(char item) {
+	Node *temp = new Node();
+	temp->data = item;
+
+	if (head == 0) {
+		head = temp;
+	}
+	else {
+		temp->next = head;
+		head = temp;
+	}
+}
+
+void linkedStack::pop() {
+	Node *p;
+	char item;
+
+	if (head != 0) {
+		item = head->data;
+		p = head;
+		head = head->next;
+		delete p;
+		cout << item;
+	}
+	else {
+		cout << "Stack is Empty" << endl;
+	}
+}
+
+bool linkedStack::isEmpty() {
+	if (head == NULL) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void linkedStack::displayStack() {
+	Node *p;
+
+	if (isEmpty() == false) {
+		cout << "List1: ";
+		p = head;
+		while (p != 0) {
+			cout << p->data << " ";
+			p = p->next;
+		}
+		cout << endl;
+	}
+	else {
+		cout << "Stack is Empty!" << endl;
+	}
+}
+
+void linkedStack::LengthStack() {
+	Node *p;
+	int cnt = 0;
+
+	if (head != NULL) {
+		p = head;
+		while (p != NULL) {
+			cnt++;
+			p = p->next;
+		}
+	}
+	cout << cnt;
+}
+
+linkedQueue:: ~linkedQueue() {
+	Node *p;
+
+	while (front != rear) {
+		p = front;
+		front = front->next;
+		delete p;
+	}
+}
+
+void linkedQueue::enqueue(char item) {
+	Node *temp = new Node();
+	temp->data = item;
+
+
+	if (front == NULL) {
+		front = temp;
+		rear = temp;
+	}
+	else {
+		rear->next = temp;
+		rear = temp;
+	}
+}
+
+void linkedQueue::dequeue() {
+	Node *p;
+	char item;
+
+	if (isEmpty() == false) {
+		item = front->data;
+		p = front;
+		front = front->next;
+		delete p;
+		cout << item;
+	}
+	else {
+		front = 0;
+		rear = 0;
+		cout << "Queue is Empty" << endl;
+	}
+}
+
+bool linkedQueue::isEmpty() {
+	if (front == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void linkedQueue::displayQueue() {
+	Node *p;
+
+	if (front != rear) {
+		cout << "List2: ";
+		p = front;
+		while (p) {
+			cout << p->data << " ";
+			p = p->next;
+		}
+		cout << endl;
+	}
+	else {
+		cout << "Queue is Empty!" << endl;
+	}
+}
+
+void linkedQueue::LengthQueue() {
+	Node *p;
+	int cnt = 0;
+
+	if (front != rear) {
+		p = front;
+		while (p) {
+			cnt++;
+			p = p->next;
+		}
+	}
+	cout << cnt;
+}
+
+
+
+int main() {
+	linkedStack s;
+	linkedQueue q;
+
+	s.push('a');
+	q.enqueue('b');
+	q.enqueue('c');
+	q.enqueue('d');
+	s.push('e');
+
+	s.displayStack();
+	q.displayQueue();
+
+	cout << "List3: ";
+
+	
+
+}
