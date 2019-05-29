@@ -1,0 +1,112 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+
+const int stackSize = 10;
+bool match(char a , char b);
+int check(char exp[]);
+void push(int item);
+int pop();
+int isFull();
+int isEmpty();
+
+int top = -1;
+int stack[stackSize];
+
+
+
+int main() {
+	ifstream infile;
+	char buffer[80];
+	int validity;
+
+	infile.open("lab3.txt");
+
+	while (infile.getline(buffer, 80)) {
+		for (int i = 0; i < strlen(buffer); i++) {
+				printf("%c", buffer[i]);
+			}
+		validity = check(buffer);
+	 }
+}
+
+int check(char exp[]) {
+	int i = 0;
+	int temp;
+	int wrong=0;
+	for(i = 0; i < strlen(exp);i++) {
+		if (exp[i] == '(' || exp[i] == '{' || exp[i] == '[') {
+			push(exp[i]);
+		}
+		if (exp[i] == ')' || exp[i] == '}' || exp[i] == ']') {
+			if (isEmpty() == true) {
+				printf("Invalid(UnBalanced parentheses)\n");
+				wrong++;
+				break;
+			}
+			else {
+				temp = pop();
+				if (match(temp, exp[i]) == false) {
+					printf("Invalid(Mismatched parentheses)\n");
+					wrong++;
+					break;
+				}
+			}
+		}
+	}
+	if (wrong == 0) {
+		if (isEmpty() == false) {
+			printf("Invalid(UnBalanced parentheses)\n");
+		}
+		else {
+			printf("Valid\n");
+		}
+	}
+	return 0;
+}
+
+
+bool match(char a, char b) {
+	if ((a == '(' &&b == ')') || (a == '{' &&b == '}') || (a == '[' &&b == ']')) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void push(int item) {
+	if (isFull() == true) {
+		printf("%s", "Stack is Full");
+	}
+	stack[++top] = item;
+}
+
+int pop() {
+	const int x = stack[top];
+
+	if (isEmpty() == true) {
+		return -1;
+	}
+	stack[top--] = 0;	
+	return x;
+
+};
+
+int isFull() {
+	if (top == stackSize - 1) {
+		return true;
+	}
+	else {
+		return false;
+	}
+};
+int isEmpty() {
+	if (top == -1) {
+		return true;
+	}
+	else {
+		return false;
+	}
+};
