@@ -1,0 +1,132 @@
+#include <iostream>
+#define NODE_NUM 6
+#define CONVERT(A) (char)(A+'A')
+#define MAX_WEIGHT 100
+using namespace std;
+
+bool visited[NODE_NUM];
+
+int dfs_greedy(int ADJM[NODE_NUM][NODE_NUM], int now, int before, int visited_num, int weight) {
+
+	int min_idx = 0;
+	int min = MAX_WEIGHT;
+
+	visited[now] = true;
+	if (before != -1) {
+		cout << "(" << CONVERT(before) << "," << CONVERT(now) << ")";
+
+		if (visited_num != NODE_NUM) {
+			cout << "-> ";
+		}
+		else {
+			cout << endl;
+			return weight;
+		}
+	}
+	for (int i = 0; i < NODE_NUM; ++i) {
+		if (min > ADJM[now][i] && !visited[i] && i != now) {
+			min = ADJM[now][i];
+			min_idx = i;
+		}
+	}
+	return dfs_greedy(ADJM, min_idx, now, visited_num + 1, weight + min);
+
+}
+void prime_greedy(int ADJM[NODE_NUM][NODE_NUM]) {
+	int start = 0;
+	for (int i = 0; i < NODE_NUM; ++i)
+		visited[i] = false;
+
+	cout << "MST : ";
+	int weight = dfs_greedy(ADJM, start, -1, 1, 0);
+	cout << "Weight : " << weight << endl;
+
+}
+struct Node {
+	int start;
+	int edge;
+	int end;
+};
+
+Node min_weight[NODE_NUM];
+int dfs_revised(Node ADJM[NODE_NUM][NODE_NUM], int now, int before, int visited_num, int weight) {
+	Node min_idx;
+	int min = MAX_WEIGHT;
+
+	visited[now] = true;
+	if (before != -1) {
+		cout << "(" << CONVERT(before) << "," << CONVERT(now) << ")";
+
+		if (visited_num != NODE_NUM) {
+			cout << "-> ";
+		}
+		else {
+			cout << endl;
+			return weight;
+		}
+	}
+	for (int i = 0; i < NODE_NUM; ++i) {
+		if (min_weight[i].edge > ADJM[now][i].edge)
+			min_weight[i] = ADJM[now][i];
+		if (min > min_weight[i].edge && !visited[i] && i != now) {
+			min = min_weight[i].edge;
+			min_idx = min_weight[i];
+		}
+	}
+	return dfs_revised(ADJM, min_idx.end, min_idx.start, visited_num + 1, weight + min);
+
+}
+void prime_revised(int ADJM[NODE_NUM][NODE_NUM]) {
+	int start = 0;
+	for (int i = 0; i < NODE_NUM; ++i) {
+		visited[i] = false;
+		min_weight[i] = Node{ -1,MAX_WEIGHT,-1 };
+	}
+
+	Node NADJM[NODE_NUM][NODE_NUM];
+	for (int i = 0; i < NODE_NUM; ++i) {
+		for (int j = 0; j < NODE_NUM; ++j) {
+			NADJM[i][j] = Node{ i,ADJM[i][j],j };
+		}
+	}
+	cout << "MST : ";
+	int weight = dfs_revised(NADJM, start, -1, 1, 0);
+	cout << "Weight : " << weight << endl;
+}
+void print_weighted_graph(int ADJM[NODE_NUM][NODE_NUM]) {
+	for (int i = 0; i <= NODE_NUM; ++i) {
+
+		for (int j = 0; j <= NODE_NUM; ++j) {
+			if (i == 0 && j == 0) {
+				cout << "\t";
+			}
+			else if (i == 0 && j > 0) {
+				cout << (char)('A' + j - 1) << "\t";
+			}
+			else {
+				if (j == 0 && i > 0)
+					cout << (char)('A' + i - 1) << "\t";
+				else if (j > 0 && i > 0)
+					cout << ADJM[i - 1][j - 1] << "\t";
+			}
+		}
+		cout << endl;
+	}
+}
+int main() {
+	int ADJM[NODE_NUM][NODE_NUM] = {
+	0,5,100,12,100,100,
+	5,0,6,10,24,100,
+	100,6,0,17,100,30,
+	12,10,17,0,20,100,
+	100,24,100,20,0,13,
+	100,100,30,100,13,0
+	};
+
+	cout << "1) Weighted Graph" << endl;
+	print_weighted_graph(ADJM);
+	cout << "\n2) Minimal Spanning Tree (Greedy algorithm)" << endl;
+	prime_greedy(ADJM);
+	cout << "\n3) Revised Prim's Algorithm" << endl;
+	prime_revised(ADJM);
+}
