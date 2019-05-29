@@ -1,0 +1,128 @@
+<algorithm>
+#include <vector>
+
+#define EDGE_NUM 9
+#define NODE_NUM 6
+#define CHAR_TO_INT(x) (x-'A')
+
+using namespace std;
+
+struct Node {
+	char ff;
+	int edges;
+	char ll;
+};
+
+bool compare(const Node &f, const Node &s) {
+	return f.edges < s.edges;
+}
+
+Node adjList[EDGE_NUM];
+vector<Node> MST;
+int parent[EDGE_NUM];
+
+void init() {
+	adjList[0].ff = 'A';
+	adjList[0].ll = 'B';
+	adjList[0].edges = 5;
+
+	adjList[1].ff = 'B';
+	adjList[1].ll = 'C';
+	adjList[1].edges = 6;
+
+	adjList[2].ff = 'A';
+	adjList[2].ll = 'D';
+	adjList[2].edges = 12;
+
+	adjList[3].ff = 'B';
+	adjList[3].ll = 'D';
+	adjList[3].edges = 10;
+
+	adjList[4].ff = 'C';
+	adjList[4].ll = 'D';
+	adjList[4].edges = 17;
+
+	adjList[5].ff = 'B';
+	adjList[5].ll = 'E';
+	adjList[5].edges = 24;
+
+	adjList[6].ff = 'D';
+	adjList[6].ll = 'E';
+	adjList[6].edges = 20;
+
+	adjList[7].ff = 'C';
+	adjList[7].ll = 'F';
+	adjList[7].edges = 30;
+
+	adjList[8].ff = 'E';
+	adjList[8].ll = 'F';
+	adjList[8].edges = 13;
+
+	for (int i = 0; i < EDGE_NUM; ++i) {
+		parent[i] = i;
+	}
+}
+
+void print() {
+	for (int j = 0; j < 9; ++j) {
+		Node node = adjList[j];
+		printf("\t%c %d %c", node.ff, node.edges, node.ll);
+
+	}
+	printf("\n");
+}
+
+int unionFind(int node) {
+	if (parent[node] == node) {
+		return node;
+	}
+	return parent[node] = unionFind(parent[node]);
+}
+
+int kruskal() {
+	int i = 0;
+	int cost = 0;
+	while (i < EDGE_NUM && MST.size() < NODE_NUM - 1)
+	{
+		Node node = adjList[i];
+		int firstUnion = unionFind(CHAR_TO_INT(node.ff));
+		int secondUnion = unionFind(CHAR_TO_INT(node.ll));
+		if (firstUnion != secondUnion) {
+			if (firstUnion < secondUnion) {
+				parent[secondUnion] = firstUnion;
+			}
+			else {
+				parent[firstUnion] = secondUnion;
+			}
+			MST.push_back(node);
+			cost += node.edges;
+		}
+		i++;
+	}
+	return cost;
+}
+
+
+void printMST() {
+	for (int i = 0; i < MST.size(); ++i) {
+		printf("\t%d) Edge%d:  %c %d %c\n",
+			i + 1, i + 1, MST[i].ff, MST[i].edges, MST[i].ll);
+	}
+}
+int main() {
+	init();
+
+	cout << "Original Data:" << endl;
+	print();
+	cout << "\nSorted Data:" << endl;
+	sort(&adjList[0], &adjList[EDGE_NUM], compare);
+	print();
+
+	cout << "\nKruskal's MST:" << endl;
+	int totalCoast = kruskal();
+	printMST();
+
+	printf("\nTotal Cost:\t%d\n", totalCoast);
+
+	return 0;
+}
