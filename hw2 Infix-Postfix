@@ -1,0 +1,133 @@
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+
+static int isp[] = { 0,19,12,12,13,13,0 }; //스택의 맨 위 연산자의 우선순위 값
+static int icp[] = { 20,19,12,12,13,13,0 }; //입력받은 연산자의 우선순위 값
+
+
+
+int poststack[100]; //postfix함수에서 매개변수의 토큰을 담는 stack
+int evalstack[100]; //eval함수에서 매개변수의 토큰이나 토큰의 연산결과를 담는 stack
+char postresult[20]; //postfix의 결과를 담는 배열
+
+void postfix(char line[]);
+void eval(char line[]);
+
+void postpush(char item); 
+void evalpush(char opj);
+char postpop();
+int evalpop();
+int top = -1;
+int n = 0;
+
+void postpush(char item) { //poststack에 토큰을 넣어주는 함수
+	poststack[++top] = item;
+}
+
+char postpop() { //poststack의 마지막 요소를 반환하거나 postresult에 넣어주는 함수
+	postresult[n++] = poststack[top];
+	return poststack[top--];
+
+};
+
+void evalpush(char obj) { //evalstack에 토큰이나 연산결과를 넣어주는 함수
+	evalstack[++top] = obj;
+}
+
+int evalpop() { //evalstack의 마지막 요소를 반환하는 함수
+	return evalstack[top--];
+}
+
+
+
+int weight(char mark) { //연산기호의 우선순위 값을 반환하는 함수
+	if (mark == ')') {
+		return 3;
+	}
+	else if (mark == '*' || mark == '/') {
+		return 2;
+	}
+	else if (mark == '+' || mark == '-') {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+
+}
+
+int main() {
+	char line[20]; //수식을 입력받는 배열
+	cout << "Echo data (infix form)    : ";
+	cin.getline(line,20); //배열 안에 수식을 넣어준다.
+ 
+	cout << "Conversion (postfix form) : ";
+	postfix(line); //postfifx 함수 실행
+	
+	cout << endl;
+
+	cout << "Result                    : ";
+	eval(postresult); //eval 함수 실행
+}
+
+
+void postfix(char line[]) {
+
+	int i = 0;
+
+	while (line[i] != '\0') {
+		char token = line[i]; 
+		if (token == '(') {
+			postpush(token); //토큰 '(' 을 poststack에 넣어준다.
+		}
+		else if (token == ')') {
+			while (poststack[top] != '(') {
+				printf("%c", postpop()); //괄호 안의 토큰을 출력한다.
+			}
+			postpop(); //'('을 지운다.
+		}
+		else if ((token == '+') || (token == '-') || (token == '*') || (token == '/')) {
+			if (isp[weight(poststack[top])] < icp[weight(token)]) { //입력받은 연산자의 우선순위 값이 스택의 맨 위 연산자의 우선순위 값보다 클 경우
+				postpush(token); //입력받은 연산자를 스택에 넣어준다.
+			}
+			else { //아닌 경우
+				printf("%c",postpop()); //스택의 맨 위 연산자를 반환하고
+				postpush(token); //입력받은 연산자를 스택에 넣어준다.
+			}
+		}
+		else {
+			printf("%c", token); //피연산자는 출력한다.
+			postresult[n++] = token; //postresult 배열에 피연산자를 넣어준다.
+		}
+		i++;
+	}
+	while (poststack[top] != '\0') {
+		printf("%c",postpop()); //스택에 남아있는 토큰을 출력한다.
+	}
+}
+
+void eval(char line[]) {
+	int op1, op2; //피연산자를 담을 변수
+	int i = 0;
+
+	
+	while (line[i] != '\0') {
+		char token = line[i];
+		if ((token == '+') || (token == '-') || (token == '*') || (token == '/')) {
+			op2 = evalpop(); //두 번째 피연산자
+			op1 = evalpop(); //첫 번째 피연산자
+			switch (token) { //피연산자의 연산 결과를 스택에 넣는다.
+			case '+': evalpush(op1 + op2); break; 
+			case '-': evalpush(op1 - op2); break;
+			case '*': evalpush(op1*op2); break;
+			case '/': evalpush(op1 / op2); break;
+			}
+		}
+		else {
+			evalpush(token-'0'); //char형 토큰을 int형으로 변환한다.
+		}
+		i++;
+	}
+	printf("%d", evalpop()); //연산 결과를 출력한다.
+}
