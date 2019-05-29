@@ -1,0 +1,56 @@
+#include <iostream>
+#include <fstream>
+#include <string.h>
+using namespace std;
+
+int main() {
+	int max;
+	cout << "n 입력: ";
+	cin >> max;
+	int **square = new int*[max];
+	for (int a = 0; a < max; a++) {
+		square[a] = new int[max];
+	}
+	for (int i = 0; i < max; i++) {
+		for (int j = 0; j < max; j++) {
+			square[i][j] = 0;
+		}
+	}
+
+
+	int key = 2;
+	int i = 0, j = max / 2;
+	square[i][j] = 1;
+	int row, col;
+
+	while (key <= max * max) {
+		
+		if (i - 1 < 0) {
+			row = max - 1;
+		}
+		else {
+			row = i - 1;
+		}
+		if (j - 1 < 0) {
+			col = max - 1;     
+		}
+		else {
+			col = j - 1;
+		}
+		if (square[row][col] != 0) {
+			i = (i + 1) % max;
+		}
+		else {
+			i = row; j = col;			
+		}
+		square[i][j] = key++;
+	}
+	for (int k = 0; k < max; k++) {
+		for (int l = 0; l < max; l++) {
+			cout << ("%d", square[k][l]) << " ";
+		}
+		cout << endl;
+	}
+	return 0;
+}
+
