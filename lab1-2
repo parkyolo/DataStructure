@@ -1,0 +1,44 @@
+#include <iostream>
+#include <stdio.h>
+
+int add(int n, int m) {
+	if (n == 0) {
+		return m;
+	}
+	else {
+		add(n - 1, m + 1);
+	}
+}
+
+int diff(int n, int m) {
+	if (n == 0) {
+		return m;
+	}
+	else {
+		diff(n - 1, m - 1);
+	}
+}
+
+int sum(int n) {
+	if (n < 2) {
+		return n;
+	}
+	else {
+		return n + sum(n - 1);
+	}
+}
+
+int main() {
+	int n;
+	int m;
+	int a;
+	printf("Enter number 1: ");
+	scanf("%d", &n);
+	printf("Enter number 2: ");
+	scanf("%d", &m);
+	printf("    Addition Result is: %d\n", add(n, m));
+	printf("    Difference Result: %d\n", diff(n, m));
+	printf("Enter a number: ");
+	scanf("%d", &a);
+	printf("    Result is: 3+2+1 = %d", sum(n));
+}
