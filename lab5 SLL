@@ -1,0 +1,239 @@
+#include <iostream>
+using namespace std;
+
+class Node {
+private:
+	int data;
+	Node *next;
+	friend class SLL;
+};
+
+class SLL {
+private:
+	Node *head = 0;
+public:
+	void Insert(int num);
+	void Delete(int num);
+	void List();
+	void Search(int num);
+	void PrintLast();
+	int Length();
+	void FindNth(int num);
+	void InvertList();
+};
+
+void SLL::Insert(int num) {
+	Node *temp = new Node();
+	Node *p, *q;
+	temp->data = num;
+
+	if (head == NULL) {
+		head = temp;
+	}
+	else if (temp->data < head->data) {
+		temp->next = head;
+		head = temp;
+	}
+	else {
+		p = head;
+		while ((p != 0) && (p->data < temp->data)) {
+			q = p;
+			p = p->next;
+		}
+		if (p != 0) {
+			temp->next = p;
+		}
+		else {
+			q->next = temp;
+		}
+	}
+}
+
+void SLL::Delete(int num) {
+	Node *p, *q;
+
+	if (head != 0) {
+		if (head->data == num) {
+			p = head;
+			head = head->next;
+			delete p;
+		}
+		else {
+			p = head;
+			while ((p != 0) && (p->data != num)) {
+				q = p;
+				p = p->next;
+			}
+			if (p != 0) {
+				q->next = p->next;
+				delete p;
+			}
+			else {
+				cout << "not found" << endl;
+			}
+		}
+	}
+	else {
+		cout << "List is empty" << endl;
+	}
+}
+
+
+
+void SLL::List() {
+	Node *p;
+
+	if (head != 0) {
+		cout << "list: ";
+		p = head;
+		while (p != 0) {
+			cout << p->data << " ";
+			p = p->next;
+		}
+		cout << endl;
+	}
+	else {
+		cout << "List is empty" << endl;
+	}
+}
+
+void SLL::Search(int num) {
+	Node *p;
+
+	if (head != 0) {
+		p = head;
+		while (p != 0 && p->data != num) {
+			p = p->next;
+		}
+		if (p->data == num) {
+			cout << p->data << " is in the list " << endl;
+		}
+		else {
+			cout << p->data << " is not in the list " << endl;
+		}
+	}
+	else {
+		cout << "List is empty" << endl;
+	}
+}
+
+void SLL::PrintLast() {
+	Node *p;
+
+	if (head == NULL) {
+		cout << "List is empty" << endl;
+	}
+	else {
+		p = head;
+		while (p->next) {
+			p = p->next;
+		}
+		cout << p->data << endl;
+	}
+}
+
+int SLL::Length() {
+	Node *p;
+	int cnt = 0;
+
+	if (head != NULL) {
+		p = head;
+		while (p != NULL) {
+			cnt++;
+			p = p->next;
+		}
+	}
+	return cnt;
+}
+
+void SLL::FindNth(int num) {
+	Node *p;
+	
+	if (Length() < num) {
+		cout << "not found" << endl;
+	}
+	else {
+		if (head == NULL) {
+			cout << "List is empty" << endl;
+		}
+		else {
+			p = head;
+			for (int i = 0; i < num - 1; i++) {
+				p = p->next;
+			}
+			cout << p->data << endl;
+		}
+	}
+}
+
+void SLL::InvertList() {
+	Node *p, *q, *r;
+	p = head;
+	q = NULL;
+	 
+	while (p) {
+		r = q;
+		q = p;
+		p = p->next;
+		q->next = r;
+	}
+	head = q;
+
+	List();
+
+	p = head;
+	q = NULL;
+	while (p) {
+		r = q;
+		q = p;
+		p = p->next;
+		q->next = r;
+	}
+	head = q;
+}
+
+int main() {
+	SLL l;
+	int input = 0;
+	int data = 0;
+	cout << "1. insert, 2. delete, 3. list, 4. search, 5. PrintLast 6. FindNth 7. InvertList 8. Quit" << endl;
+
+	while (input < 5) {
+		int input = 0;
+		cout << "Enter Number : ";
+		cin >> input;
+
+		if (input == 1) {
+			cout << "Insert ";
+			cin >> data;
+			l.Insert(data);
+		}
+		else if (input == 2) {
+			cout << "Delete ";
+			cin >> data;
+			l.Delete(data);
+		}
+		else if (input == 3) {
+			l.List();
+		}
+		else if (input == 4) {
+			cout << "Search ";
+			cin >> data;
+			l.Search(data);
+		}
+		else if (input == 5) {
+			l.PrintLast();
+		}
+		else if (input == 6) {
+			cout << "Find " ;
+			cin >> data;
+			l.FindNth(data);
+		}
+		else if (input == 7) {
+			l.InvertList();
+		}
+		else {
+			break;
+		}
+	}
+}
