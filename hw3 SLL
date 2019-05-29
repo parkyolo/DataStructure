@@ -1,0 +1,192 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Node { // 입력 받은 데이터의 name, id, major, grade 를 저장할 구조체 Node
+	char name;
+	int id;
+	string major;
+	char grade;
+	Node *next;
+};
+
+class Data { // data를 넣어주고 출력해주는 함수들을 담은 클래스
+private:
+	Node *head = 0;
+public:
+	void Insert(Node data);
+	void PrintName();
+	void PrintMajor(string major);
+	void PrintGrade(char grade);
+	bool isEmpty();
+	Data concatenate(Data Data1, Data Data2);
+	Node search(int num);
+};
+
+void Data::Insert(Node data) { // data의 name, id, major, grade를 name을 기준으로 오름차순으로 정렬해주는 함수
+	Node* temp = new Node();
+
+	//temp의 name, id, major, grade에 입력 받은 데이터를 넣어준다.
+	temp->name = data.name;
+	temp->id = data.id; 
+	temp->major = data.major;
+	temp->grade = data.grade;
+
+	Node *p, *q = NULL;
+
+	if (head == 0) { // 리스트가 비어있으면
+		head = temp; // head에 temp를 넣는다.
+	}
+	else if (temp->name <= head->name) { //temp의 name이 head의 name보다 작거나 같으면
+		temp->next = head; // temp의 다음 주소값이 head가 되고
+		head = temp; // head는 temp가 된다.
+	}
+	else {
+		p = head;
+		while ((p != 0) && (p->name < temp->name)) { // q의 name이 temp의 name보다 작을 때
+			q = p; // q의 주소값을 q에 넣고
+			p = p->next; // p는 p->next 가 된다.
+		}
+		if (p != 0) { // 리스트가 비어있지 않은데 while문이 끝난 경우
+			temp->next = p; 
+			q->next = temp; //q와 p 사이의 주소값에 temp가 들어감
+		}
+		else { //리스트의 마지막인 경우
+			q->next = temp; // q의 다음 주소값에 temp가 들어감
+		}
+	}
+}
+
+void Data::PrintName() { // data를 name을 기준으로 오름차순으로 출력하는 함수
+	Node *p = NULL;
+
+	if (!isEmpty()) { //리스트가 비어있지 않을 때
+		p = head; 
+		while (p != 0) { //리스트가 빌 때 까지 p의 name, id, major, grade 출력
+			cout << p->name << " " << p->id << " " << p->major << " " << p->grade << endl;
+			p = p->next;
+		}
+		cout << endl;
+	}
+	else { //리스트가 비어있을 때
+		cout << "List is empty" << endl;
+	}
+}
+
+void Data::PrintMajor(string major) { // data에서 특정 major인 사람만 출력하는 함수
+	Node *p = NULL;
+
+	if (!isEmpty()) { // 리스트가 비어있지 않을 때
+		p = head;
+		while(p != 0) {
+			if (p->major == major) { //p의 major가 입력 받은 major와 같으면 p의 name, id, major, grade 출력
+				cout << p->name << " " << p->id << " " << p->major << " " << p->grade << endl;
+			}
+			p = p->next;
+		}
+		cout << endl;
+	}
+	else { //리스트가 비어있을 때
+		cout << "List is empty" << endl;
+	}
+}
+
+void Data::PrintGrade(char grade) { // data에서 특정 grade인 사람만 출력하는 함수
+	Node *p = NULL;
+
+	if (!isEmpty()) { //리스트가 비어있지 않을 때
+		p = head;
+		while (p != 0) {
+			if (p->grade == grade) { // p의 grade가 입력 받은 grade와 같으면 p의 name, id, major, grade 출력
+				cout << p->name << " " << p->id << " " << p->major << " " << p->grade << endl;
+			}
+			p = p->next;
+		}
+		cout << endl;
+	}
+	else { // 리스트가 비어있을 때
+		cout << "List is empty" << endl;
+	}
+}
+
+bool Data::isEmpty() { // 리스트가 비어있으면 true를 반환하는 함수
+	if (head == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+Data Data::concatenate(Data Data1, Data Data2) { // 리스트 두 개를 합치는 함수
+	Data Data3; //합친 리스트를 넣어줄 Data 타입의 변수
+	int i;
+
+	for (i = 0; i < 7; ++i) { //Data1의 크기만큼 반복
+		Data3.Insert(Data1.search(i)); // Data1의 i 번 째 노드를 Data3에 삽입
+	}
+	for (i = 0; i < 4; ++i) { // Data2의 크기만큼 반복
+		Data3.Insert(Data2.search(i)); // Data2의 i 번 째 노드를 Data3에 사빕
+	}
+	return Data3;
+}
+
+Node Data:: search(int num) { // 원하는 인덱스의 노드를 반환하는 함수
+	Node* p = head;
+
+	for (int i = 0; i < num; ++i) {
+		p = p->next;
+	}
+	return *p;
+}
+
+int main() {
+	int i;
+
+	FILE *f1;
+	f1 = fopen("hw3_Data1.txt", "r");
+
+	Data d1;
+	Node temp1;
+
+	for (i = 0; i < 7; ++i) {
+		temp1.major = "";
+		char buffer[10];
+		int n = 0;
+		fscanf(f1, "%s %d %s %s", &temp1.name, &temp1.id, buffer, &temp1.grade);
+		while (buffer[n] != NULL) {
+			temp1.major += buffer[n];
+			++n;
+		}
+		d1.Insert(temp1);
+	}
+
+	FILE *f2;
+	f2 = fopen("hw3_Data2.txt", "r");
+
+	Data d2;
+	Node temp2;
+
+	for (i = 0; i < 4; ++i) {
+		temp2.major = "";
+		char buffer[10];
+		int n = 0;
+		fscanf(f2, "%s %d %s %s", &temp2.name, &temp2.id, buffer, &temp2.grade);
+		while (buffer[n] != NULL) {
+			temp2.major += buffer[n];
+			++n;
+		}
+		d2.Insert(temp2);
+	}
+
+	Data d3;
+
+	d3 = d3.concatenate(d1, d2);
+
+	cout << "-------Ascending Order-------" << endl;
+	d1.PrintName();
+	cout << "---------Grade \"A\"---------" << endl;
+	d1.PrintGrade('A');
+	cout << "---------Major \"CS\"---------" << endl;
+	d3.PrintMajor("CS");
+}
