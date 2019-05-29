@@ -1,0 +1,179 @@
+#include <iostream>
+#include <queue>
+#include <fstream>
+
+using namespace std;
+
+class Node {
+private:
+	int data;
+	Node * link;
+public:
+	Node() {
+		this->data = NULL;
+		this->link = NULL;
+	}
+
+	Node(int data, Node * link = NULL) {
+		this->data = data;
+		this->link = link;
+	}
+
+	void setData(int data) {
+		this->data = data;
+	}
+
+	int getData() {
+		return this->data;
+	}
+
+	void setLink(Node * link) {
+		this->link = link;
+	}
+
+	Node * getLink()
+	{
+		return this->link;
+	}
+
+
+};
+
+class ADList {
+private:
+	Node * vertax;
+	int *visited;
+	int size;
+public:
+	ADList(int size) {
+		this->size = size;
+		this->vertax = new Node[size];
+		for (int i = 0; i < size; i++) {
+			this->vertax[i].setData(i);
+		}
+	}
+
+	Node * getStartNode() {
+		return this->vertax;
+	}
+
+	void insert(int data, int v) {
+
+		Node * temp = &vertax[v];
+		for (; temp->getLink() != NULL; temp = temp->getLink());
+		temp->setLink(new Node(data));
+
+	}
+
+	void display() {
+		for (int i = 0; i < this->size; i++) {
+			cout << "V" << i << ":  ";
+			for (Node * temp = vertax[i].getLink(); temp != NULL; temp = temp->getLink()) {
+				cout << temp->getData() << " ";
+			}
+			cout << endl;
+		}
+	}
+
+	void startDfs() {
+		visited = new int[this->size]();
+		Dfs(0);
+		cout << endl;
+	}
+
+	void Dfs(int v) {
+		Node * w;
+		visited[v] = 1;
+		cout << v << "  ";
+		for (w = &vertax[v]; w != NULL; w = w->getLink())
+			if (!visited[w->getData()])      Dfs(w->getData());
+	}
+
+	void Bfs(int v) {
+		queue<int> q;
+		visited = new int[this->size]();
+
+		Node *p;
+		visited[v] = 1;
+		q.push(v);
+		cout << v << " ";
+
+		while (!q.empty()) {
+			v = q.front();
+			q.pop();
+			for (p = &vertax[v]; p; p = p->getLink()) {
+				if (!visited[p->getData()]) {
+					q.push(p->getData());
+					visited[p->getData()] = 1;
+					cout << p->getData() << " ";
+				}
+			}
+		}
+	}
+
+};
+
+#include <fstream>
+
+char inputNumber[10];
+
+
+int g[6][6] = { {0,0,0,0,1,1},{0,0,1,1,0,1},{0,1,0,1,1,0},{0,1,1,0,0,0},{1,0,1,0,0,1},{1,1,0,0,1,0} };
+void bfs(int);
+
+void bfs(int v) {
+	queue<int> q;
+	int visited[6] = { 0, };
+	q.push(v);
+
+
+	v = q.front();
+	visited[v] = 1;
+	cout << v << " ";
+
+	while (!q.empty()) {
+		for (int w = g[v][v]; w < 6; w++) {
+			if (g[v][w] != 0 && visited[w] != 1) {
+				q.push(w);
+				visited[w] = 1;
+				cout << w << " ";
+				v++;
+			}
+
+		}
+		v = q.front();
+		q.pop();
+	}
+}
+
+int main() {
+
+
+	ifstream inStream("DFS.txt");
+
+	int numVertices, numNeighbors, data;
+	inStream >> numVertices;
+	ADList list(numVertices);
+	for (int i = 0; i < numVertices; i++) {
+		inStream >> numNeighbors;
+		for (int j = 0; j < numNeighbors; j++) {
+			inStream >> data;
+			list.insert(data, i);
+		}
+	}
+	cout << "1) Graph Data : " << endl;
+	list.display();
+	cout << "2) Depth First Search Output (starting from v0)" << endl;
+	list.startDfs();
+	cout << endl;
+
+	cout << "***** Adjacent Matrix" << endl;
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 6; j++) {
+			cout << g[i][j] << " ";
+		}
+		cout << endl;
+	}
+	cout << "***** Breadth First Search(BFS)" << endl;
+	bfs(0);
+}
