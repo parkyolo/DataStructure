@@ -1,0 +1,65 @@
+#include <iostream>
+#include <cstdio>
+
+
+struct triangle { // triangle의 base, height, area를 저장할 구조체 triangle
+	float base;
+	float height;
+	double area;
+};
+
+struct rectangle{ // rectangle의 side1, side2, area를 저장할 구조체 rectangle
+	float side1;
+	float side2;
+	double area;
+};
+
+struct circle { // circle의 radius, area를 저장할 구조체 circle
+	float radius;
+	double area;
+};
+
+typedef struct { // triangle, rectangle, circle 구조체을 멤버로 가지는 구조체 figure
+	triangle t;
+	rectangle r;
+	circle c;
+} figure;
+
+int main() {
+	FILE *f;
+	f = fopen("hw1-2.txt", "r"); //"hw1-2.txt"파일을 읽기 전용으로 오픈
+
+	figure fig[10]; //fig라는 figure 변수를 생성
+	double area; // 각 도형의 면적을 담을 변수
+
+	int i = 0; // triangle 구조체의 인덱스
+	int j = 0; // rectangle 구조체의 인덱스
+	int k = 0; // circle 구조체의 인덱스
+	
+	while(!feof(f)) { //파일의 끝에 도달하게 되면 while 문을 빠져나감
+		char word[20]; // 파일의 첫 단어를 저장할 변수
+		fscanf(f, "%s", word);
+		if (!strcmp(word, "triangle")) { // 파일의 첫 단어가 triangle일 때
+			fscanf(f, "%f %f ", &fig[i].t.base, &fig[i].t.height); // 변수.멤버.멤버 순으로 접근하여 파일의 데이터를 순서대로 넣음
+			area = 0.5*fig[i].t.base*fig[i].t.height; // triangle 의 면적을 구함
+			fig[i].t.area = area; // triangle 의 면적 값을 넣음
+			printf("triangle %.2f %.2f %.2f\n", fig[i].t.base, fig[i].t.height, fig[i].t.area); // base, height, area를 소숫점 2번째 자리까지 출력함
+			i++; // i의 인덱스를 더해줌
+		}
+		else if (!strcmp(word, "rectangle")) { // 파일의 첫 단어가 rectangle일 때
+			fscanf(f, "%f %f ", &fig[j].r.side1, &fig[j].r.side2); //파일의 데이터를 순서대로 side1, side2 에 넣음
+			area = fig[j].r.side1*fig[j].r.side2; //rectangle의 면적을 구함
+			fig[j].r.area = area; // rectangle 의 면적 값을 넣음
+			printf("rectangle %.2f %.2f %.2f\n", fig[j].r.side1, fig[j].r.side2, fig[j].r.area); // side1, side2, area를 소숫점 2번째 자리까지 출력함
+			j++; // j의 인덱스를 더해줌
+		}
+		else if (!strcmp(word, "circle")) { // 파일의 첫 단어가 circle일 때
+			fscanf(f, "%f", &fig[k].c.radius); //파일의 데이터를 radius 에 넣어줌
+			area = 3.14*fig[k].c.radius*fig[k].c.radius; //circle의 면적을 구함
+			fig[k].c.area = area; // circle 의 면적 값을 넣음
+			printf("circle %.2f         %.2f\n", fig[k].c.radius, fig[k].c.area);// radius, area를 소숫점 2번째 자리까지 출력함
+			k++; //k의 인덱스를 더해줌
+		}
+	}
+	fclose(f); //파일 닫기
+}
