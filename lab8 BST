@@ -1,0 +1,286 @@
+#include<iostream>
+using namespace std;
+
+class Node {
+private:
+	int data;
+	Node* right;
+	Node* left;
+	friend class Tree;
+};
+
+class Tree {
+private:
+	Node * root = NULL;
+	int first = 0;
+	int count = 0;
+public:
+	void insert(int data); 
+	Node* INSERT_BST(Node* ptr, int data); 
+	void search_(int data); 
+	Node* search_BST(Node* ptr, int data); 
+	void del(int data);
+	Node* DEL_BST(Node* ptr, int data);
+	Node* find_min(Node* ptr);
+	Node* find_max(Node* ptr);
+	void drawTree();
+	void drawTree_BST(Node* ptr, int level);
+	void Traverse();
+	void Inorder(Node*);
+	void Postorder(Node*);
+	void Preorder(Node*);
+	int Leaf(Node*);
+	void Leafprint();
+	Node* getRoot();
+};
+
+Node* Tree::getRoot() {
+	Node *p = root;
+	return p;
+}
+void Tree::insert(int key) {
+	Node* ptr = root;
+	INSERT_BST(ptr, key);
+}
+
+Node* Tree::INSERT_BST(Node* ptr, int key) {
+	Node* temp = NULL;
+	if (ptr == NULL && first == 0) {	
+		temp = new Node(); 
+		temp->data = key;
+		temp->left = NULL;
+		temp->right = NULL;
+		root = temp;
+		first = 1; 
+		return temp;
+	}
+	if (ptr == NULL) {
+		temp = new Node();
+		temp->data = key;
+		temp->left = NULL;
+		temp->right = NULL;
+		return temp;
+	}
+	else if (key < ptr->data) {
+		ptr->left = INSERT_BST(ptr->left, key);
+	}
+	else if (key > ptr->data) {
+		ptr->right = INSERT_BST(ptr->right, key);
+	}
+	return ptr;
+}
+
+void Tree::drawTree()
+{
+	Node* ptr = root;
+	if (ptr != NULL)
+		drawTree_BST(ptr, 1);
+	else
+		cout << "Tree is empty" << endl;
+}
+
+void Tree::drawTree_BST(Node* ptr, int level) {
+	if (ptr != 0 && level <= 7) {
+		drawTree_BST(ptr->right, level + 1);	
+		for (int i = 1; i <= (level - 1); i++)
+			cout << "      ";		
+		cout << ptr->data;		
+		if (ptr->left != 0 && ptr->right != 0) std::cout << " <" << std::endl;	
+		else if (ptr->right != 0) cout << " ↗" << endl;
+		else if (ptr->left != 0) cout << " ↘" << endl;	
+		else cout << endl;
+		drawTree_BST(ptr->left, level + 1);
+	}
+}
+
+Node* Tree::find_min(Node* ptr) {
+	if (ptr->left == NULL)
+	{
+		return ptr;	
+	}
+	else
+		find_min(ptr->left);
+}
+
+Node* Tree::find_max(Node* ptr) {
+	if (ptr->right == NULL)
+	{
+		return ptr;	
+	}
+	else
+		find_min(ptr->right);	
+}
+
+void Tree::del(int data) {
+	Node* ptr = root;
+	DEL_BST(ptr, data);
+}
+Node* Tree::DEL_BST(Node* ptr, int key) {
+	if (ptr != NULL) {
+		if (key < ptr->data) {
+			ptr->left = DEL_BST(ptr->left, key);
+		}
+		else if (key > ptr->data) {
+			ptr->right = DEL_BST(ptr->right, key);
+		}
+		else if (ptr->left == NULL && ptr->right == NULL) { // leaf node
+			if (ptr == root)
+				root = NULL;
+			ptr = NULL;
+		}
+		else if (ptr->left == NULL) {
+			Node * temp = ptr;
+			ptr = ptr->right;
+			if (temp == root)
+				root = ptr;
+			delete temp;
+		}
+		else if (ptr->right == NULL) {
+			Node * temp = ptr;
+			ptr = ptr->left;
+			if (temp == root)
+				root = ptr;
+			delete temp;
+		}
+		else {
+			Node * temp = find_max(ptr->left);
+			ptr->data  = temp->data;
+			ptr->left = DEL_BST(ptr->left, ptr->data);
+		}
+
+	}
+	else
+		cout << "Tree is empty" << endl;
+	return ptr;
+}
+void Tree::search_(int data) {
+	Node* ptr = root;
+	if (search_BST(ptr, data) != NULL)
+		cout << "Found" << endl;
+	else
+		cout << "Not Found" << endl;
+}
+
+Node* Tree::search_BST(Node* ptr, int data)	//search 재귀함수
+{
+	if (ptr == NULL)
+		return ptr; //search unsuccessful
+	else {
+		if (data == ptr->data)	//ptr의 값과 data 값이 같다면
+			return ptr;
+		else if (data < ptr->data)	//ptr의 값보다 data 값이 작다면
+			ptr = search_BST(ptr->left, data); //search leftsubtree
+		else if (data > ptr->data)	//ptr의 값보다 data 값이 크다면
+			ptr = search_BST(ptr->right, data); //search rightsubtree
+	}
+	return ptr;		//ptr을 반환시켜준다.
+}
+
+void Tree::Traverse() //트리를 출력한다.
+{
+	Node* p = root;
+	if (p == NULL) {
+		cout << "Tree is empty" << endl;
+	}
+	else {
+		cout << "inorder: ";
+		Inorder(p);
+		cout << "   ";
+		cout << "postorder: ";
+		Postorder(p);
+		cout << "    ";
+		cout << "preorder: ";
+		Preorder(p);
+		cout << endl;
+	}
+}
+
+void Tree::Inorder(Node *p) //LPR
+{
+	if (p) {
+		Inorder(p->left);
+		cout << p->data << " ";
+		Inorder(p->right);
+	}
+}
+void Tree::Postorder(Node *p) //LRP
+{
+	if (p)
+	{
+		Postorder(p->left);
+		Postorder(p->right);
+		cout << p->data << " ";
+	}
+}
+void Tree::Preorder(Node *p) //PLR
+{
+	if (p)
+	{
+		cout << p->data << " ";
+		Preorder(p->left);
+		Preorder(p->right);
+	}
+}
+
+
+int Tree::Leaf(Node*p) {
+	count = 0;
+	if (p == NULL) {
+		return 0;
+	}
+	else {
+		if ((p->left == NULL) && (p->right == NULL)) {
+			count++;
+		}
+		else {
+			count = Leaf(p->left) + Leaf(p->right);
+		}
+	}
+	return count;
+}
+
+int main()
+{
+	Tree t; 
+	int num; 
+	int input;
+	while (1)
+	{
+		cout << " 1. Insert  2. Delete  3. Search  4. Print  5. Traverse  6. Leaf  7. Quit " << endl;
+		cout << "Input : ";
+		cin >> input;
+		if (input == 1)	{
+			cout << ">> ";
+			cin >> num;
+			t.insert(num);
+		}
+		else if (input == 2) {
+			if (t.getRoot() == NULL) {
+				cout << "Tree is empty" << endl;
+			}
+			else {
+				cout << ">> ";
+				cin >> num;
+				t.del(num);
+			}
+		}
+		else if (input == 3)	{
+			cout << ">> ";
+			cin >> num;
+			t.search_(num);
+		}
+		else if (input == 4)
+			t.drawTree(); 
+		else if (input == 5) {
+			t.Traverse();
+		}
+		else if (input == 6) {
+			cout << "Leaf: ";
+			cout << t.Leaf(t.getRoot()) << endl;
+		}
+		else if (input == 7)
+			exit(1);
+	}
+	return 0;
+
+}
