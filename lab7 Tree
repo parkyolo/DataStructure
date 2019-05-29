@@ -1,0 +1,235 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+
+char prec[4][2] = { '*',2,'/',2,'+', 1,'-',1 };
+
+class Node {
+private:
+	char data;
+	int prio;
+	Node *right;
+	Node *left;
+	Node(char value) { data = value; prio = 4; left = 0; right = 0; }
+	friend class Tree;
+};
+
+class Tree {
+private:
+	Node *root;
+public:
+	Tree() { root = 0; }
+	void Build(char);
+	void Operand(char);
+	void Operator(char data, int prio);
+	void Print(int num);
+	void Inorder(Node *p);
+	void Postorder(Node *p);
+	void Preorder(Node *p);
+	int Eval(Node *p);
+	int Check(int num);
+	void EvalPrint();
+	void Proc(Node*p);
+	int isdigit(int num);
+	void ProcPrint();
+
+};
+
+void Tree::Build(char input) {
+	int i = 0;
+	for (i = 0; i < 4; i++) {
+		if (input == prec[i][0]) {
+			Operator(input, prec[i][1]);
+			return;
+		}
+	}
+	Operand(input);
+
+}
+
+void Tree::Operand(char data) {
+	Node *temp = new Node(data);
+	if (root == NULL) {
+		root = temp;
+	}
+	else {
+		Node *p = root;
+		while (p->right != NULL) {
+			p = p->right;
+		}
+		p->right = temp;
+	}
+}
+
+void Tree::Operator(char data, int prio) {
+	Node *temp = new Node(data);
+	temp->prio = prio;
+	if (root->prio >= temp->prio) {
+		temp->left = root;
+		root = temp;
+	}
+	else {
+		temp->left = root->right;
+		root->right = temp;
+	}
+}
+
+void Tree::Print(int num)
+{
+	Node* p = root;	
+	switch (num)
+	{
+	case 0:
+		Inorder(p);
+		break;
+	case 1:
+		Postorder(p);
+		break;
+	case 2:
+		Preorder(p);
+		break;
+	}
+	cout << endl;
+}
+
+void Tree::Inorder(Node *p)
+{
+	if (p) {
+		Inorder(p->left);
+		std::cout << p->data;
+		Inorder(p->right);
+	}
+}
+void Tree::Postorder(Node *p)
+{
+	if (p)
+	{
+		Postorder(p->left);
+		Postorder(p->right);
+		std::cout << p->data;
+	}
+}
+void Tree::Preorder(Node *p)
+{
+	if (p)
+	{
+		std::cout << p->data;
+		Preorder(p->left);
+		Preorder(p->right);
+	}
+}
+
+int Tree::Check(int num) {
+	for (int i = 0; i < 4; i++) {
+		if (prec[i][0] == num) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int Tree::Eval(Node *p) {
+	int value = 0;
+	int left = 0;
+	int right = 0;
+	int answer = 0;
+	if (p != NULL) {
+		if (Check(p->data)) {
+			value = p->data - '0';
+		}
+		else
+		{
+			left = Eval(p->left);
+			right = Eval(p->right);
+			switch (p->data)
+			{
+			case '+':
+				value = left + right;
+				break;
+			case '-':
+				value = left - right;
+				break;
+			case '*':
+				value = left * right;
+				break;
+			case '/':
+				value = left / right;
+				break;
+			}
+		}
+	}
+	return value;
+}
+
+void Tree::EvalPrint()
+{
+	Node* p = root;
+	if (p)
+	{
+		cout << Eval(p) << endl;
+	}
+	else
+		cout << "입력해주세요." << endl;
+}
+
+int Tree::isdigit(int num) {
+	if (num == 1 || num == 2) {
+		return 0;
+	}
+	else {
+		return 1;
+	}
+}
+
+void Tree::Proc(Node *p) {
+	if (p) {
+		if (!isdigit(p->prio)) {
+			cout << "(";
+		}
+		Proc(p->left);
+		cout << p->data;
+		Proc(p->right);
+		if (!isdigit(p->prio)) {
+			cout << ")";
+		}
+	}
+}
+
+void Tree::ProcPrint() {
+	Node *p = root;
+	if (p)
+	{
+		Proc(p);
+		cout << endl;
+	}
+	else
+		cout << "입력해주세요." << endl;
+}
+int main() {
+
+	Tree t;
+	string problem = "";
+
+
+	cin >> problem;
+	for (int i = 0; i < problem.length(); i++) {
+		t.Build(problem[i]);
+	}
+	cout << "InOrder : ";
+	t.Print(0);
+
+	cout << "PostOrder ; ";
+	t.Print(1);
+
+	cout << "PreOrder : ";
+	t.Print(2);
+
+	cout << "Evaluation : ";
+	t.EvalPrint();
+
+	cout << "Tree structure" << endl;
+	t.ProcPrint();
+
+
+}
