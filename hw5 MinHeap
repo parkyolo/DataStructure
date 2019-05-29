@@ -1,0 +1,154 @@
+#include <iostream>
+using namespace std;
+#define MAX_ELEMENTS 8 //힙의 최대크기
+#define HEAP_FULL(n) (n == MAX_ELEMENTS) //힙이 다 찼는지 확인
+#define HEAP_EMPTY(n) (!n) //힙이 비었는지 확인
+int BT[5] = { 9,2,5,3,8 }; //임의의 숫자를 넣은 binary tree 배열
+
+class Heap {
+private:
+	int current = 1; //힙의 현재 인덱스
+	int heap[MAX_ELEMENTS]; //힙 생성
+public:
+	void insertBT();
+	void insert_(int);
+	void delete_();
+	void Print();
+	bool empty();
+	bool full();
+	void leveltest();
+};
+
+void Heap::insertBT() { // binary tree를 힙에 넣어줌
+	for (int j = 0; j < 5; j++) {
+		insert_(BT[j]);
+	}
+}
+
+void Heap::insert_(int data) { //입력받은 데이터를 힙에 넣어줌
+	int i;
+
+	if (HEAP_FULL(current)) { //힙이 다 찼을 때
+		cout << "Heap is full" << endl;
+	}
+	i = current++; //변수 i에 current의 값을 할당하고 1을 더해줌
+	while ((i != 1) && (data < heap[i/2])) { //data가 현재 노드의 부모보다 작을 때
+		heap[i] = heap[i / 2];	//부모 노드를 자식 노드로 바꿈
+		i /= 2; //i를 부모의 인덱스로 바꿈
+	}
+	heap[i] = data; //data 삽입
+}
+
+void Heap::delete_() {
+	int parent = 1;
+	int child = 2;
+	int item = heap[1];// 변수 item에 힙의 첫번째 값 할당
+	int temp = heap[--current]; // temp에 힙의 마지막 값 할당
+	int i = current;
+
+	if (HEAP_EMPTY(current)) {
+		cout << "Heap is Empty" << endl;
+	}
+	else {
+		while (child <= i) {
+			if ((child < i) && (heap[child] > heap[child + 1])) { //자식끼리 값 비교
+				child++; //오른쪽 자식의 값이 더 클 때 오른쪽 자식의 인덱스로 바꿔줌
+			}
+			if (temp <= heap[child]) { break; } //temp가 힙의 child보다 작을 때 break
+			heap[parent] = heap[child]; // 부모에 자식의 값을 넣어줌
+			parent = child; //부모의 인덱스를 자식의 인덱스로 바꿔줌
+			child = child * 2; //자식의 인덱스를 그 자식의 인덱스로 바꿔줌
+
+		}
+		heap[parent] = temp; //heap의 parent에 temp를 넣어줌
+		Print();
+	}
+}
+
+void Heap::Print() { //힙을 출력하는 함수
+	for (int j = 1; j < current; j++) {
+		cout << heap[j] << " ";
+	}
+	cout << endl;
+}
+
+bool Heap::empty() { //힙이 empty인지 검사
+	if (HEAP_EMPTY(current)) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+bool Heap::full() { //힙이 full인지 검사
+	if (HEAP_FULL(current)) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+void Heap::leveltest() { //힙의 level을 출력해줌
+	cout << "Level Test ";
+	cout << current / 2 << endl;
+}
+
+int main() {
+	int input = 0;
+	int data = 0;
+
+	cout << "1) " << endl;
+
+	cout << "-> ";
+	for (int j = 0; j < 5; j++) {
+		cout << BT[j] << " ";
+	}
+	cout << endl;
+
+	Heap h1;
+	h1.insertBT(); //binary tree를 힙에 넣어줌
+
+	cout << "2) " << endl;
+	cout << "-> ";
+	h1.Print(); //힙 출력
+
+	cout << "3) " << endl;
+	cout << " 1. Insert, 2. Delete, 3. Empty, 4. Full, 5. Quit " << endl;
+	int j = 3;
+	while (1) {
+
+		cout << ++j << ") ";
+		cin >> input;
+		if (input == 1) {
+			cout << "Insert ";
+			cin >> data;
+			h1.insert_(data);
+			h1.Print();
+		}
+		else if (input == 2) {
+			h1.delete_();
+		}
+		else if (input == 3) {
+			if (h1.empty()) {
+				cout << "Heap is Empty" << endl;
+			}
+			else {
+				cout << "Heap is not Empty" << endl;
+			}
+		}
+		else if (input == 4) {
+			if (h1.full()) {
+				cout << "Heap is Full" << endl;
+			}
+			else {
+				cout << "Heap is not Full" << endl;
+			}
+		}
+		else if (input == 5) {
+			break;
+		}
+	}
+	h1.leveltest();
+}
