@@ -1,0 +1,96 @@
+//
+//  lab10-extra.cpp
+//  data-structure-lab
+//
+//  Created by 홍승의 on 2018. 6. 11..
+//  Copyright © 2018년 홍승의. All rights reserved.
+//
+
+#include <iostream>
+#define TABLE_SIZE 7
+using namespace std;
+
+typedef struct {
+    int key;
+    bool empty;
+}Hashtable;
+
+Hashtable htable[TABLE_SIZE];
+
+void printtable(){
+    printf("(");
+    for(int i =0;i<TABLE_SIZE;++i){
+        if(htable[i].empty){
+            printf("_");
+        }
+        else{
+            printf("%d",htable[i].key);
+        }
+        if(TABLE_SIZE-1 > i){
+            printf(", ");
+        }
+    }
+    printf(")\n");
+}
+bool insertkey(int key){
+    int idx = key%TABLE_SIZE;
+   
+    for(;idx<TABLE_SIZE;++idx){
+        if(htable[idx].empty){
+            htable[idx].empty = false;
+            htable[idx].key = key;
+            return true;
+        }
+    }
+    
+    return false;
+}
+bool findkey(int key){
+    int idx = key%TABLE_SIZE;
+    
+    for(;idx<TABLE_SIZE;++idx){
+        if(htable[idx].key == key){
+            printf("FOUND %d\n",key);
+            return true;
+        }
+    }
+    return false;
+}
+bool deletekey(int key){
+    int idx = key%TABLE_SIZE;
+    
+    for(;idx<TABLE_SIZE;++idx){
+        if(htable[idx].key == key){
+            htable[idx].empty=true;
+            return true;
+        }
+    }
+    return false;
+}
+int main(){
+    for(int i =0;i<TABLE_SIZE;++i){
+        htable[i].empty = true;
+    }
+    char ch;
+    do {
+        
+        int key;
+        bool check=true;
+        scanf("\n%c",&ch);
+        if (ch != 'q') {
+            printf ("Enter key ");
+            scanf("%d",&key);
+            switch (ch){
+                case 'i': check=insertkey(key);
+                    if (check==false) printf("Cannot insert key\n"); break;
+                case 'f': check=findkey(key);
+                    if (check==false) printf("key not found\n"); break;
+                case 'd': check=deletekey(key);
+                    if (check==false) printf("key not found\n"); break;
+                default : printf("Bad Command");
+            }
+        }
+        printtable(); 
+    }while (ch != 'q' );
+    return 0;
+}
