@@ -1,0 +1,195 @@
+#include <iostream>
+
+using namespace std;
+
+#define max_size 7
+
+class Node
+{
+public:
+   Node *link;
+   int key;
+   Node(int data) { key = data; link = NULL; }
+
+   friend class Hash;
+};
+
+class Hash
+{
+private:
+   Node *head;
+public:
+   Hash() { head = NULL; }
+   int findKey(int key);
+   void insertKey(int key);
+   void deleteKey(int key);
+   void printTable();
+   void finding(int key);
+   int hashKey(int key) { return key % max_size; }
+   Node* getHead() { return head; }
+};
+
+Hash myHash[max_size];
+
+int Hash::findKey(int key)
+{
+   Node *p;
+   p = head;
+   while (p != NULL && p->key != key) {
+      p = p->link;
+   }
+   if (!p) {
+      return 0;
+   }
+   else {
+      return 1;
+   }
+}
+
+void Hash::finding(int key)
+{
+   Node *p;
+   p = head;
+   while (p != NULL && p->key != key) {
+      p = p->link;
+   }
+   if (!p) {
+      cout << "No data" << endl;
+   }
+   else
+   {
+      cout << key << "is found." << endl;
+   }
+}
+
+void Hash::insertKey(int key)
+{
+   Node *temp = new Node(key);
+   Node *p;
+
+   if (head == NULL) {
+      head = temp;
+   }
+   else {
+      p = head;
+
+      while (p->link != NULL)
+      {
+         p = p->link;
+      }
+      p->link = temp;
+   }
+}
+void Hash::deleteKey(int key)
+{
+   Node *p, *q;
+
+   p = head;
+
+   if (head->key == key)
+   {
+      q = p;
+      p = p->link;
+      head = p;
+      delete q;
+   }
+   else
+   {
+      while (p->key != key && p != NULL)
+      {
+         q = p;
+         p = p->link;
+      }
+      if (p->key == key)
+      {
+         q->link = p->link;
+         delete p;
+      }
+      else
+      {
+         cout << "key not found" << endl;
+      }
+   }
+}
+
+void Hash::printTable()
+{
+   Node *p;
+
+   p = head;
+
+   while (p != NULL)
+   {
+      cout << p->key << " ";
+      p = p->link;
+   }
+
+   cout << endl;
+}
+
+int main()
+{
+   int index;
+   int input;
+   int num;
+   Hash h;
+   while (1)
+   {
+      cout << "1.insert 2.delete 3.find 4.quit " << endl;
+      cin >> input;
+
+      switch (input) {
+      case 1:
+         {
+            cout << "Enter Key ";
+            cin >> num;
+            cout << endl;
+            index = h.hashKey(num);
+            if (!myHash[index].findKey(num)) {
+               myHash[index].insertKey(num);
+               for (int i = 0; i < max_size; i++) {
+                  cout << "Htable[" << i << "]" << ":";
+                  myHash[i].printTable();
+               }
+               cout << endl;
+            }
+            else
+               cout << "이미 데이터가 존재합니다." << endl;
+            break;
+         }
+      case 2:
+         {
+            cout << "Delete Key ";
+            cin >> num;
+            cout << endl;
+            index = h.hashKey(num);
+            myHash[index].deleteKey(num);
+            for (int i = 0; i < max_size; i++) {
+               cout << "Htable[" << i << "]" << ":";
+               myHash[i].printTable();
+            }
+            cout << endl;
+            break;
+         }
+
+      case 3:
+         {
+            cout << "Find Key ";
+            cin >> num;
+            index = h.hashKey(num);
+            myHash[index].finding(num);
+            cout << endl;
+            break;
+         }
+      case 4:
+         {
+            break;
+         }
+      default:
+         {
+            cout << "Bad Command" << endl;
+            break;
+         }
+      }
+   }
+}
