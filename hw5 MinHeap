@@ -52,7 +52,7 @@ void Heap::delete_() {
 	else {
 		while (child <= i) {
 			if ((child < i) && (heap[child] > heap[child + 1])) { //자식끼리 값 비교
-				child++; //오른쪽 자식의 값이 더 클 때 오른쪽 자식의 인덱스로 바꿔줌
+				child++; //왼쪽 자식의 값이 더 클 때 오른쪽 자식의 인덱스로 바꿔줌
 			}
 			if (temp <= heap[child]) { break; } //temp가 힙의 child보다 작을 때 break
 			heap[parent] = heap[child]; // 부모에 자식의 값을 넣어줌
