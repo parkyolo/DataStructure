@@ -1,0 +1,155 @@
+#include <iostream>
+#define TABLE_SIZE 7
+using namespace std;
+
+
+class Node {
+    int key;
+    Node *link;
+    Node(int data) { key = data; link = NULL; };
+    friend class Htable;
+};
+
+class Htable {
+    private:
+    Node *head;
+    public:
+    Htable() { head = NULL; };
+    void printtable();
+    bool insertkey(int);
+    int findkey(int);
+    void finding(int);
+    bool deletekey(int);
+    int hashKey(int key) { return key % TABLE_SIZE; };
+    Node* getHead() { return head; };
+};
+
+Htable htable[TABLE_SIZE];
+
+void Htable:: printtable(){
+    Node *p = head;
+    while (p) {
+        cout << p->key << " ";
+        p = p->link;
+    } 
+    cout << endl;
+}
+
+bool Htable:: insertkey(int key){
+    Node *temp = new Node(key);
+    Node *p;
+
+    if (head == NULL) {
+        head = temp;
+    }
+    else {
+        p = head;
+        while (p->link) {
+            p = p->link;
+        }
+        p->link = temp;
+    }
+}
+
+int Htable:: findkey(int key) {
+    Node *p = head;
+    while (p != NULL && p->key != key) {
+        p = p->link;
+    }
+    if (!p) {
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+void Htable:: finding(int key){
+    Node *p = head;
+    while ( p != NULL && p->key != key) {
+        p = p->link;
+    }
+    if (!p) {
+        cout << "No data" << endl;
+    }
+    else {
+        cout << key << "is found." << endl;
+    }
+}
+
+bool Htable:: deletekey(int key){
+    Node *p, *q;
+    p = head;
+    
+    if (head->key == key) {
+        q = p;
+        p = p->link;
+        head = p;
+        delete q;
+    }
+    else {
+        while (p->key != key && p!= NULL) {
+            q = p;
+            p = p->link;
+        }
+        if (p->key == key) {
+            q->link = p->link;
+            delete p;
+        }
+        else {
+            cout << "key not found" << endl;
+        }
+    }
+}
+
+int main(){
+    int input,index, num;
+    Htable h;
+    while(1) {
+        cout << "1.Find, 2.Insert, 3.Delete, 4.Quit" << endl;
+        cin >> input;
+
+        switch (input) {
+            case 1:
+            cout << "Find key : ";
+            cin >> num;
+            index = h.hashKey(num);
+            htable[index].finding(num);
+            cout << endl;
+            break;
+            case 2:
+            cout << "Enter Key : ";
+            cin >> num;
+            cout << endl;
+            index = h.hashKey(num);
+            if (!htable[index].findkey(num)) {
+                htable[index].insertkey(num);
+                for (int i=0; i<TABLE_SIZE; i++) {
+                    cout << "Htable[" << i << "]" << " : " ;
+                    htable[i].printtable();
+                }
+                cout << endl;
+            }
+            else {
+                cout << "Data already exist." << endl;
+            }
+            break;
+            case 3:
+            cout << "Delete Key : ";
+            cin >> num;
+            cout << endl;
+            index = h.hashKey(num);
+            htable[index].deletekey(num);
+            for (int i = 0; i < TABLE_SIZE; i++) {
+                cout << "Htable[" << i << "]" << " : ";
+                htable[i].printtable();
+            }
+            cout << endl;
+            break;
+            case 4:
+            break;
+            default:
+            cout << "Bad Command" << endl;
+            break;
+        }
+    }
+}
